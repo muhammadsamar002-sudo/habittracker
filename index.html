@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit OS | Pro</title>
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="ambient-light light-1"></div>
+    <div class="ambient-light light-2"></div>
+
+    <div class="app-layout">
+        
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-box">
+                    <div class="logo-icon">H</div>
+                    <span class="brand-text">HABIT OS</span>
+                </div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+                </button>
+            </div>
+
+            <div class="user-profile-mini">
+                <img src="assets/icon.png" alt="Profile" class="avatar-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="avatar-circle fallback">SA</div>
+                <div class="user-info">
+                    <div class="u-name" id="displayUsername">Samar</div>
+                    <div class="u-level">Lvl <span id="userLevel">1</span></div>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchView('dashboard', this)">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span class="link-text">Dashboard</span>
+                </button>
+                <button class="nav-btn" onclick="switchView('todos', this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span class="link-text">Task Command</span>
+                </button>
+                <button class="nav-btn" onclick="switchView('analytics', this)">
+                    <svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                    <span class="link-text">Analytics</span>
+                </button>
+                <button class="nav-btn" onclick="switchView('system', this)">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span class="link-text">System</span>
+                </button>
+            </div>
+
+            <div class="xp-container">
+                <div class="xp-label">
+                    <span class="link-text">XP Progress</span>
+                    <span id="xpText">0 XP</span>
+                </div>
+                <div class="xp-bar-bg"><div class="xp-bar-fill" id="xpFill"></div></div>
+            </div>
+        </nav>
+
+        <main class="main-view">
+            
+            <header class="top-header">
+                <div class="header-left">
+                    <h2 id="viewTitle">DASHBOARD</h2>
+                    <div class="month-controls" id="monthControls">
+                        <button class="icon-btn" onclick="changeMonth(-1)">‹</button>
+                        <span id="monthDisplay">JANUARY 2026</span>
+                        <button class="icon-btn" onclick="changeMonth(1)">›</button>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="stat-badge" id="completionBadge">
+                        <span class="dot green"></span>
+                        <span id="headerRate">0%</span>
+                    </div>
+                    <button class="btn-download" onclick="exportPDF()">PDF</button>
+                    <button class="btn-download" onclick="exportData()">Excel</button>
+                </div>
+            </header>
+
+            <div id="view-dashboard" class="content-panel active">
+                <div class="scroll-container" id="gridWrapper">
+                    <div class="grid-content-width">
+                        <div class="grid-header-row" id="daysHeader"></div>
+                        <div id="habitsContainer" class="habits-list"></div>
+                        
+                        <div class="divider"><span>SLEEP & RECOVERY</span><div class="line"></div></div>
+                        <div id="sleepContainer" class="sleep-list"></div>
+                    </div>
+                </div>
+                
+                <footer class="dash-footer">
+                    <input type="text" id="quickNote" placeholder="Daily reflection..." onchange="saveQuickNote(this.value)">
+                </footer>
+            </div>
+
+            <div id="view-todos" class="content-panel">
+                <div class="center-panel-limit" id="todoWrapper">
+                    <div class="panel-header">
+                        <h3>Task Command</h3>
+                        <p class="sub-text">Prioritized monthly objectives.</p>
+                    </div>
+                    <div class="todo-wrapper">
+                        <div class="todo-input-row">
+                            <input type="text" id="todoInput" placeholder="Add new task..." onkeypress="handleTodoKey(event)">
+                            <select id="todoIntensity">
+                                <option value="low">Low</option>
+                                <option value="med">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                            <button class="btn-primary" onclick="addTodo()">Add</button>
+                        </div>
+                        <div id="todoList" class="todo-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-analytics" class="content-panel">
+                <div class="analytics-grid">
+                    <div class="stat-card">
+                        <h3>Consistency Score</h3>
+                        <div class="big-number" id="statsScore">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Longest Streak</h3>
+                        <div class="big-number" id="statsStreak">0 Days</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Reps</h3>
+                        <div class="big-number" id="statsReps">0</div>
+                    </div>
+                    <div class="stat-card full-width">
+                        <h3>Habit Breakdown</h3>
+                        <div id="habitStatsList" class="bar-chart-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-system" class="content-panel">
+                <div class="settings-container">
+                    <div class="setting-group">
+                        <h3>User Profile</h3>
+                        <label>Display Name</label>
+                        <input type="text" id="inputUsername" placeholder="Enter name">
+                        <button class="btn-primary" onclick="updateUsername()">Save Profile</button>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Appearance</h3>
+                        <label>Accent Color</label>
+                        <div class="color-picker">
+                            <div class="color-dot" style="background:#6366f1" onclick="setAccent('#6366f1')"></div>
+                            <div class="color-dot" style="background:#10b981" onclick="setAccent('#10b981')"></div>
+                            <div class="color-dot" style="background:#f43f5e" onclick="setAccent('#f43f5e')"></div>
+                            <div class="color-dot" style="background:#f59e0b" onclick="setAccent('#f59e0b')"></div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Data Management</h3>
+                        <button class="btn-danger" onclick="hardReset()">Factory Reset</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="pdf-generator-container" style="display:none;"></div>
+
+    <div class="modal-overlay" id="addModal">
+        <div class="modal glass-panel">
+            <h2>New Protocol</h2>
+            <input type="text" id="newHabitName" placeholder="E.g. Morning Run" autofocus>
+            <div class="modal-actions">
+                <button class="btn-text" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="confirmAddHabit()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
