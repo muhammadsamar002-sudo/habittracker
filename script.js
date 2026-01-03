@@ -1,5 +1,5 @@
 /**
- * HABIT OS PRO - ENGINE V8 (Fixes: PDF Width, Excel Loop, Spacing)
+ * HABIT OS PRO - ENGINE V9 (Responsive + Fixed PDF)
  */
 
 const CONFIG = {
@@ -215,8 +215,17 @@ function switchView(viewName, btn) {
     document.getElementById(`view-${viewName}`).classList.add('active');
     const titles = { 'dashboard': 'DASHBOARD', 'todos': 'TASK COMMAND', 'analytics': 'ANALYTICS', 'system': 'SYSTEM' };
     document.getElementById('viewTitle').innerText = titles[viewName];
+    // Close sidebar on mobile after clicking
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('collapsed');
+    }
 }
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+function toggleSidebar() { 
+    // In mobile CSS, 'collapsed' actually means OPEN (translateX(0))
+    document.getElementById('sidebar').classList.toggle('collapsed'); 
+}
+
 function changeMonth(dir) {
     app.currentMonth += dir;
     if(app.currentMonth < 0) app.currentMonth = 0;
@@ -254,13 +263,11 @@ function confirmAddHabit() {
     if(name) { app.data[app.currentMonth].habits.push({ id: Date.now(), name: name, checks: [] }); saveData(); renderAll(); closeModal(); document.getElementById('newHabitName').value = ""; }
 }
 
-// --- UPDATED EXPORT FUNCTIONS ---
 function exportData() {
     let csv = "Date,Habit,Status\n";
     const m = app.data[app.currentMonth];
     const daysInMonth = new Date(app.year, app.currentMonth + 1, 0).getDate();
     
-    // Habits: Loop strictly through every day (1-31)
     m.habits.forEach(h => {
         for(let d=1; d<=daysInMonth; d++) {
             const status = h.checks.includes(d) ? 'Completed' : 'Missed';
@@ -284,26 +291,21 @@ function exportData() {
 }
 
 function exportPDF() {
-    // 1. Get All Elements to Clone
     const gridOriginal = document.getElementById('gridWrapper');
     const todoOriginal = document.getElementById('todoWrapper');
     const analyticsOriginal = document.querySelector('#view-analytics .analytics-grid'); 
     const hiddenContainer = document.getElementById('pdf-generator-container');
     
-    // 2. Clear & Prepare
     hiddenContainer.innerHTML = '';
     
-    // --- TITLE ---
     const title = document.createElement('div');
     title.className = 'pdf-title';
     title.innerText = `HABIT OS REPORT - ${CONFIG.months[app.currentMonth].toUpperCase()} ${app.year}`;
     hiddenContainer.appendChild(title);
 
-    // --- GRID ---
     const gridClone = gridOriginal.cloneNode(true);
     hiddenContainer.appendChild(gridClone);
     
-    // --- ANALYTICS ---
     const analyticsTitle = document.createElement('h3');
     analyticsTitle.innerText = "MONTHLY PERFORMANCE";
     analyticsTitle.className = 'pdf-section-title';
@@ -312,7 +314,6 @@ function exportPDF() {
     const analyticsClone = analyticsOriginal.cloneNode(true);
     hiddenContainer.appendChild(analyticsClone);
 
-    // --- TASKS ---
     const taskTitle = document.createElement('h3');
     taskTitle.innerText = "TASK COMMAND";
     taskTitle.className = 'pdf-section-title';
@@ -321,18 +322,14 @@ function exportPDF() {
     const todoClone = todoOriginal.cloneNode(true);
     hiddenContainer.appendChild(todoClone);
 
-    // --- WATERMARK ---
     const watermark = document.createElement('div');
     watermark.className = 'pdf-watermark';
     watermark.innerHTML = `<div class="watermark-line"></div><div class="watermark-text">HABIT OS | SYSTEM BY SAMAR</div>`;
     hiddenContainer.appendChild(watermark);
 
-    // 3. Trigger PDF Mode
     hiddenContainer.style.display = 'block';
     hiddenContainer.classList.add('pdf-mode');
 
-    // 4. Generate
-    // Forces explicit width to ensure all 31 days are visible
     const opt = {
       margin:       [10, 10, 10, 10],
       filename:     `HabitOS_${CONFIG.months[app.currentMonth]}_${app.year}.pdf`,
@@ -341,7 +338,7 @@ function exportPDF() {
           scale: 2, 
           useCORS: true, 
           backgroundColor: '#050505', 
-          windowWidth: 2500 // HUGE WIDTH TO PREVENT CUTOFF
+          windowWidth: 2500 // Ensures full width capture
       },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
